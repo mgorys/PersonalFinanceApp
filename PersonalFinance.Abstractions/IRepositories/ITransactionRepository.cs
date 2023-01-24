@@ -14,5 +14,7 @@ namespace PersonalFinance.Abstractions.IRepositories
         Task<ServerResponseSuccess<bool>> PostTransactionAsync(Transaction transaction);
         Task<ServerResponseSuccess<IEnumerable<Transaction>>> GetListOfTransactionByCategoryId(int categoryId, TransactionQuery query);
         Task<ServerResponseSuccess<bool>> ChangeTransactionsCategory(int transactionId, int uncategrorizedCategoryId);
+        Task<int> GetTransactionsCount(int categoryId, TransactionQuery query);
+        Task<int> GetAmountOfMonthOfTransactionByCategoryId(int categoryId, int month);
     }
 }

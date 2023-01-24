@@ -30,12 +30,14 @@ function App() {
     categoryHasItems,
     transactionList,
     defaultQuery,
+    transactionMonthArray,
     getCategories,
     postCreateTransaction,
     postEditCategory,
     postCreateCategory,
     deleteCategory,
     getTransactionsByCategory,
+    getTransactionsArrayByCategory,
   } = useContext(DataContext);
   const {
     postLoginUser,
@@ -70,7 +72,7 @@ function App() {
                 currentUser={currentUser}
                 setCurrentCategory={setCurrentCategory}
                 getCategories={getCategories}
-                categoryList={categoryList}
+                categoryList={categoryList.dataFromServer}
                 hasItems={hasItems}
                 deleteCategory={deleteCategory}
                 setCurrentCategoryToChange={setCurrentCategoryToChange}
@@ -84,6 +86,8 @@ function App() {
             path="category"
             element={
               <Category
+                getTransactionsArrayByCategory={getTransactionsArrayByCategory}
+                transactionMonthArray={transactionMonthArray.dataFromServer}
                 currentUser={currentUser}
                 queryTransactionsByCategory={queryTransactionsByCategory}
                 setQueryTransactionsByCategory={setQueryTransactionsByCategory}
@@ -111,12 +115,14 @@ function App() {
         handleClose={() => setShowCreateCategoryModal(false)}
         postCreateCategory={postCreateCategory}
       />
-      <CreateTransactionModal
-        categories={categoryList}
-        show={showCreateTransactionModal}
-        handleClose={() => setShowCreateTransactionModal(false)}
-        postCreateTransaction={postCreateTransaction}
-      />
+      {hasItems && (
+        <CreateTransactionModal
+          categories={categoryList.dataFromServer}
+          show={showCreateTransactionModal}
+          handleClose={() => setShowCreateTransactionModal(false)}
+          postCreateTransaction={postCreateTransaction}
+        />
+      )}
       <AccountLoginModal
         show={showLoginModal}
         handleClose={() => setShowLoginModal(false)}

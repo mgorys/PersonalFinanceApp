@@ -10,7 +10,11 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
-export default function BarCategory({ category, transactionList, hasItems }) {
+export default function BarCategory({
+  category,
+  transactionMonthArray,
+  hasItems,
+}) {
   const [options, setOptions] = useState({});
   const [dataChart, setDataChart] = useState({});
   const [chartReady, setChartReady] = useState(false);
@@ -24,7 +28,7 @@ export default function BarCategory({ category, transactionList, hasItems }) {
   );
   useEffect(() => {
     if (hasItems) LoadChartData();
-  }, [transactionList]);
+  }, [transactionMonthArray]);
 
   function LoadChartData() {
     try {
@@ -68,7 +72,7 @@ export default function BarCategory({ category, transactionList, hasItems }) {
       var array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
       function getArrayValues() {
-        transactionList.forEach((element) => {
+        transactionMonthArray.forEach((element) => {
           const d = new Date(element.putTime);
           const index = d.getMonth();
           array[index] += element.amount;
@@ -80,7 +84,7 @@ export default function BarCategory({ category, transactionList, hasItems }) {
         datasets: [
           {
             label: 'Amount',
-            data: array,
+            data: transactionMonthArray ?? array,
             backgroundColor: `${category.color}`,
           },
         ],
@@ -98,7 +102,7 @@ export default function BarCategory({ category, transactionList, hasItems }) {
     <>
       {chartReady && (
         <Bar
-          style={{ margin: '50px', maxHeight: '500px' }}
+          style={{ margin: '20px 50px', maxHeight: '500px' }}
           options={options}
           data={dataChart}
         />

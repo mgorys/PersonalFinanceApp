@@ -8,17 +8,20 @@ export const DataContext = createContext({
   categoryHasItems: false,
   transactionList: {},
   defaultQuery: {},
+  transactionMonthArray: [],
   getCategories: () => {},
   postCreateTransaction: () => {},
   postEditCategory: () => {},
   postCreateCategory: () => {},
   deleteCategory: () => {},
   getTransactionsByCategory: () => {},
+  getTransactionsArrayByCategory: () => {},
 });
 export const DataProvider = ({ children }) => {
   const { currentUser } = useContext(UserContext);
   const [categoryList, setCategoryList] = useState([]);
   const [transactionList, setTransactionList] = useState([]);
+  const [transactionMonthArray, setTransactionMonthArray] = useState([]);
   const [hasItems, setHasItems] = useState(false);
   const [categoryHasItems, setCategoryHasItems] = useState(false);
   let endpointCategory = 'category';
@@ -26,6 +29,7 @@ export const DataProvider = ({ children }) => {
   let defaultQuery = {
     sortBy: null,
     sortDirection: null,
+    page: null,
   };
   const defaultCategories = [
     {
@@ -97,6 +101,19 @@ export const DataProvider = ({ children }) => {
       setCategoryHasItems(true);
     }
   }
+  async function getTransactionsArrayByCategory(id) {
+    if (currentUser == null) {
+      setTransactionList(defaultTransactions);
+      setCategoryHasItems(true);
+    } else {
+      const endpoint = endpointTransaction + '/bymonth/' + id;
+      const fetchedData = await getHttp(endpoint, null, currentUser.token);
+      if (fetchedData.status > 399) {
+        return fetchedData.status;
+      }
+      setTransactionMonthArray(fetchedData);
+    }
+  }
   async function postCreateTransaction(body) {
     const fetchedData = await postHttp(
       endpointTransaction,
@@ -139,12 +156,14 @@ export const DataProvider = ({ children }) => {
     hasItems,
     transactionList,
     defaultQuery,
+    transactionMonthArray,
     getCategories,
     postCreateTransaction,
     postEditCategory,
     postCreateCategory,
     deleteCategory,
     getTransactionsByCategory,
+    getTransactionsArrayByCategory,
   };
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 };

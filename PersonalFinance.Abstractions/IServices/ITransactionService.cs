@@ -12,5 +12,6 @@ namespace PersonalFinance.Abstractions.IServices
     {
         Task<bool> PostTransactionAsync(TransactionCreateDto transactionDto);
         Task<ServerResponseSuccess<IEnumerable<TransactionDto>>> GetTransactionsByCategoryId(int categoryId, TransactionQuery query);
+        Task<ServerResponseSuccess<IEnumerable<int>>> GetArrayOfMonthlyTransactionsByCategoryId(int categoryId);
     }
 }

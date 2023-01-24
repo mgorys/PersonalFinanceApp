@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PersonalFinance.Repositories
 {
@@ -71,7 +72,9 @@ namespace PersonalFinance.Repositories
                     ? baseQuery.OrderBy(selectedColumn)
                     : baseQuery.OrderByDescending(selectedColumn);
             }
-            var result = await baseQuery.ToListAsync();
+            var result = await baseQuery
+                .Skip((int)query.PageSize * ((int)(query.Page == null ? 1 : query.Page) - 1))
+                .Take((int)query.PageSize).ToListAsync();
             if (result == null)
             {
                 response.Success = false;
@@ -83,6 +86,23 @@ namespace PersonalFinance.Repositories
             }
             response.DataFromServer = result;
             return response;
+        }
+        public async Task<int> GetTransactionsCount(int categoryId, TransactionQuery query)
+        {
+            var resultCountSearch = await _dbContext.Transactions.Where(x=>x.CategoryId==categoryId)
+                .Where(x=>query.Search==null || x.Name.ToLower().Contains(query.Search.ToLower()) || x.Description.ToLower().Contains(query.Search.ToLower()))
+                .CountAsync();
+            return resultCountSearch;
+        }
+        public async Task<int> GetAmountOfMonthOfTransactionByCategoryId(int categoryId,int month)
+        {
+            int amountOfMonth = 0;
+            var result = await _dbContext.Transactions.Where(x => x.CategoryId == categoryId).Where(x=>x.PutTime.Month == month).ToListAsync();
+            foreach (var item in result)
+            {
+                amountOfMonth += item.Amount;
+            } 
+            return amountOfMonth;
         }
     }
 }

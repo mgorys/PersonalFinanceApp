@@ -30,5 +30,12 @@ namespace PersonalFinance.API.Controllers
 
             return Ok(response);
         }
+        [HttpGet("bymonth/{categoryId}")]
+        public async Task<ActionResult<IEnumerable<int>>> GetArrayOfMonthlyTransactionsByCategoryId(int categoryId)
+        {
+            var response = await _transactionService.GetArrayOfMonthlyTransactionsByCategoryId(categoryId);
+
+            return Ok(response);
+        }
     }
 }

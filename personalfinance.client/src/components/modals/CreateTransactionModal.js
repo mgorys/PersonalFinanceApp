@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form';
 import { Modal, Form, Button } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
 import React from 'react';
 
 export default function CreateTransactionModal({

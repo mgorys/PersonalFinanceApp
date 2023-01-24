@@ -3,9 +3,12 @@ const url = 'https://localhost:7226/api/';
 export async function getHttp(endpoint, query, token) {
   let wholeUrl = url + endpoint;
 
-  wholeUrl += '?';
-  for (const [key, value] of Object.entries(query)) {
-    if (value !== null && value !== undefined) wholeUrl += `${key}=${value}&&`;
+  if (query !== null) {
+    wholeUrl += '?';
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== null && value !== undefined)
+        wholeUrl += `${key}=${value}&&`;
+    }
   }
   let response = await fetch(wholeUrl, {
     headers: {
@@ -20,9 +23,8 @@ export async function getHttp(endpoint, query, token) {
     return response;
   }
   let result = await response.json();
-  const { dataFromServer } = result;
-  console.log('data with path', wholeUrl, dataFromServer);
-  return dataFromServer;
+  console.log('data with path', wholeUrl, result);
+  return result;
 }
 export async function postHttp(endpoint, body, token) {
   let wholeUrl = url + endpoint;

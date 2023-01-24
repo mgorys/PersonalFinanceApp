@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import BarCategory from './BarCategory';
+import PaginationContainer from '../PaginationContainer';
 
 export default function Category({
+  transactionMonthArray,
   currentCategory,
   getTransactionsByCategory,
   transactionList,
@@ -9,29 +11,33 @@ export default function Category({
   setQueryTransactionsByCategory,
   queryTransactionsByCategory,
   currentUser,
+  getTransactionsArrayByCategory,
 }) {
   const [queryChanged, setQueryChanged] = useState(false);
-
+  const { dataFromServer, pagesCount } = transactionList;
   useEffect(() => {
     if (currentCategory !== null && currentCategory !== undefined)
       getTransactionsByCategory(
         currentCategory.id,
         queryTransactionsByCategory
       );
-    if (transactionList !== null && transactionList !== undefined)
-      generateDate(transactionList);
+    getTransactionsArrayByCategory(currentCategory.id);
+    if (dataFromServer !== null && dataFromServer !== undefined)
+      generateDate(dataFromServer);
   }, [queryChanged, currentUser]);
 
-  function changeQuery() {
-    queryTransactionsByCategory.sortBy = 'PutTime';
+  function changeQuery(e) {
+    if (e === 'Date') queryTransactionsByCategory.sortBy = 'PutTime';
+    if (e === 'Amount') queryTransactionsByCategory.sortBy = 'Amount';
+
     queryTransactionsByCategory.sortDirection == 'ASC'
       ? (queryTransactionsByCategory.sortDirection = 'DESC')
       : (queryTransactionsByCategory.sortDirection = 'ASC');
     setQueryTransactionsByCategory(queryTransactionsByCategory);
     setQueryChanged(!queryChanged);
   }
-  function generateDate(transactionList) {
-    transactionList.map((transaction) => {
+  function generateDate(dataFromServer) {
+    dataFromServer.map((transaction) => {
       var newDate = new Date(transaction.putTime);
       transaction.putTime = newDate.getDate();
     });
@@ -51,7 +57,7 @@ export default function Category({
     <>
       {categoryHasItems && (
         <BarCategory
-          transactionList={transactionList}
+          transactionMonthArray={transactionMonthArray}
           category={currentCategory}
           hasItems={categoryHasItems}
         />
@@ -60,16 +66,18 @@ export default function Category({
         <thead>
           <tr>
             <th scope="col">Name</th>
-            <th scope="col">Amount</th>
-            <th scope="col" onClick={() => changeQuery()} type="button">
+            <th scope="col" onClick={(e) => changeQuery(e.target.innerHTML)}>
+              Amount
+            </th>
+            <th scope="col" onClick={(e) => changeQuery(e.target.innerHTML)}>
               Date
             </th>
             <th scope="col">Description</th>
           </tr>
         </thead>
         <tbody>
-          {categoryHasItems && Array.isArray(transactionList) ? (
-            transactionList.map((transaction) => (
+          {categoryHasItems && Array.isArray(dataFromServer) ? (
+            dataFromServer.map((transaction) => (
               <tr scope="row" key={transaction.id}>
                 <td>{transaction.name}</td>
                 <td>{transaction.amount}</td>
@@ -84,6 +92,13 @@ export default function Category({
           )}
         </tbody>
       </table>
+      {categoryHasItems && (
+        <PaginationContainer
+          pagesCount={pagesCount}
+          query={queryTransactionsByCategory}
+          setQueryChanged={() => setQueryChanged(!queryChanged)}
+        />
+      )}
     </>
   );
 }

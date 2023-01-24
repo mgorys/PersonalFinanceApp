@@ -38,13 +38,32 @@ namespace PersonalFinance.Services
         }
         public async Task<ServerResponseSuccess<IEnumerable<TransactionDto>>> GetTransactionsByCategoryId(int categoryId, TransactionQuery query)
         {
+            int resultCount = await _transactionRepository.GetTransactionsCount(categoryId, query);
+            double count = (double)resultCount / (double)query.PageSize;
+            int pagesCount = (int)Math.Ceiling(count);
+            query.Page ??= 1;
+            if (query.Page < 1 || pagesCount < query.Page)
+                throw new BadRequestException("Sorry, page has been not found");
             var resultDto = new ServerResponseSuccess<IEnumerable<TransactionDto>>();
             var result = await _transactionRepository.GetListOfTransactionByCategoryId(categoryId,query);
             if (result.Success == false)
                 throw new NotFoundException("Sorry, entities have been not found");
             resultDto.DataFromServer = _mapper.Map<IEnumerable<TransactionDto>>(result.DataFromServer);
-
+            resultDto.PagesCount = pagesCount;
             resultDto.Success = result.Success;
+            return resultDto;
+        }
+        public async Task<ServerResponseSuccess<IEnumerable<int>>> GetArrayOfMonthlyTransactionsByCategoryId(int categoryId)
+        {
+            var resultDto = new ServerResponseSuccess<IEnumerable<int>>();
+            int[] monthlyArray = new int[12];
+            for (int month = 1; month < 13; month++)
+            {
+            var result = await _transactionRepository.GetAmountOfMonthOfTransactionByCategoryId(categoryId, month);
+                monthlyArray[month-1] += (int)result;
+            }
+            resultDto.DataFromServer = monthlyArray;
+            resultDto.Success = true;
             return resultDto;
         }
     }
