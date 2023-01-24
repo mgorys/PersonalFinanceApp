@@ -19,22 +19,6 @@ Application represents data as a graphical charts.
 
 Run `update-database` command in Package Manager Console in Persistance project
 
-## CORS Policy
-
-Be sure your port is proper with origins rules placed in `Program.cs`.
-
-```bash
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        builder =>
-        {
-            builder.WithOrigins("https://localhost:3000", "http://localhost:3000")
-                                .AllowAnyHeader()
-                                .AllowAnyMethod();
-        });
-});
-```
 
 ## Architecture
 
