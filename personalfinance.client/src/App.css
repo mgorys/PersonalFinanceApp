@@ -1,0 +1,13 @@
+.title-container {
+  background-color: #102040;
+  display: flex;
+  color: white;
+}
+.title-label {
+  text-decoration: none;
+  color: white;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
