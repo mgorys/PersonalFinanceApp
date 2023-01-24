@@ -55,7 +55,9 @@ namespace PersonalFinance.Repositories
         {
             var response = new ServerResponseSuccess<IEnumerable<Transaction>>();
             var baseQuery = _dbContext.Transactions.Include(x => x.Category)
-                .Where(x => x.CategoryId == categoryId).OrderByDescending(x => x.PutTime);
+                .Where(x => x.CategoryId == categoryId)
+                .Where(x => query.Search == null || x.Name.ToLower().Contains(query.Search.ToLower()) || x.Description.ToLower().Contains(query.Search.ToLower()))
+                .OrderByDescending(x => x.PutTime);
 
             if (!string.IsNullOrEmpty(query.SortBy))
             {

@@ -30,6 +30,7 @@ export const DataProvider = ({ children }) => {
     sortBy: null,
     sortDirection: null,
     page: null,
+    search: null,
   };
   const defaultCategories = [
     {

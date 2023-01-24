@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import BarCategory from './BarCategory';
 import PaginationContainer from '../PaginationContainer';
+import { FaSearch } from 'react-icons/fa';
 
 export default function Category({
   transactionMonthArray,
@@ -14,17 +15,21 @@ export default function Category({
   getTransactionsArrayByCategory,
 }) {
   const [queryChanged, setQueryChanged] = useState(false);
+  const [searchInput, setSearchInput] = useState(null);
   const { dataFromServer, pagesCount } = transactionList;
+
   useEffect(() => {
     if (currentCategory !== null && currentCategory !== undefined)
       getTransactionsByCategory(
         currentCategory.id,
         queryTransactionsByCategory
       );
-    getTransactionsArrayByCategory(currentCategory.id);
     if (dataFromServer !== null && dataFromServer !== undefined)
       generateDate(dataFromServer);
   }, [queryChanged, currentUser]);
+  useEffect(() => {
+    getTransactionsArrayByCategory(currentCategory.id);
+  }, [currentCategory, currentUser]);
 
   function changeQuery(e) {
     if (e === 'Date') queryTransactionsByCategory.sortBy = 'PutTime';
@@ -36,6 +41,13 @@ export default function Category({
     setQueryTransactionsByCategory(queryTransactionsByCategory);
     setQueryChanged(!queryChanged);
   }
+  const handleSearchChange = (e) => {
+    setSearchInput(e.target.value);
+    queryTransactionsByCategory.search = e.target.value;
+    queryTransactionsByCategory.page = 1;
+    setQueryTransactionsByCategory(queryTransactionsByCategory);
+    setQueryChanged(!queryChanged);
+  };
   function generateDate(dataFromServer) {
     dataFromServer.map((transaction) => {
       var newDate = new Date(transaction.putTime);
@@ -93,11 +105,23 @@ export default function Category({
         </tbody>
       </table>
       {categoryHasItems && (
-        <PaginationContainer
-          pagesCount={pagesCount}
-          query={queryTransactionsByCategory}
-          setQueryChanged={() => setQueryChanged(!queryChanged)}
-        />
+        <>
+          <div className="d-flex flex-row" style={{ marginLeft: '20px' }}>
+            <input
+              style={{ maxHeight: '35px' }}
+              className="p-2"
+              type="text"
+              placeholder="Search here"
+              onChange={handleSearchChange}
+              value={searchInput}
+            />
+            <PaginationContainer
+              pagesCount={pagesCount}
+              query={queryTransactionsByCategory}
+              setQueryChanged={() => setQueryChanged(!queryChanged)}
+            />
+          </div>
+        </>
       )}
     </>
   );
